@@ -20,7 +20,6 @@ public class SimpleArticleService implements ArticleService {
     public SimpleArticleService(ArticleGenerator articleGenerator) {
         this.articleGenerator = articleGenerator;
     }
-//генерит статьи из слов в список, а потом их сохраняет
     @Override
     public void generate(Store<Word> wordStore, int count, Store<Article> articleStore) {
         LOGGER.info("Геренация статей в количестве {}", count);
