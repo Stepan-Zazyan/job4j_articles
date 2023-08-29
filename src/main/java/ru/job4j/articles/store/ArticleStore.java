@@ -51,16 +51,21 @@ public class ArticleStore implements Store<Article>, AutoCloseable {
     }
 
     @Override
-    public Article save(Article model) {
+    public List<Article> save(List<Article> model) throws SQLException {
         LOGGER.info("Сохранение статьи");
         String sql = "insert into articles(text) values(?)";
+
         try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            statement.setString(1, model.getText());
-            statement.executeUpdate();
-            ResultSet key = statement.getGeneratedKeys();
-            while (key.next()) {
-                model.setId(key.getInt(1));
+            for (Article x: model) {
+                statement.setString(1, x.getText());
+                statement.executeUpdate();
+                ResultSet key = statement.getGeneratedKeys();
+                while (key.next()) {
+                    x.setId(key.getInt(1));
+                }
+                statement.addBatch();
             }
+            statement.executeBatch();
         } catch (Exception e) {
             LOGGER.error("Не удалось выполнить операцию: { }", e.getCause());
             throw new IllegalStateException();
@@ -93,5 +98,9 @@ public class ArticleStore implements Store<Article>, AutoCloseable {
         if (connection != null) {
             connection.close();
         }
+    }
+
+    public Connection getConnection() {
+        return connection;
     }
 }

@@ -2,25 +2,22 @@ package ru.job4j.articles;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.job4j.articles.model.Article;
 import ru.job4j.articles.service.SimpleArticleService;
 import ru.job4j.articles.service.generator.RandomArticleGenerator;
 import ru.job4j.articles.store.ArticleStore;
 import ru.job4j.articles.store.WordStore;
 
 import java.io.InputStream;
-import java.util.List;
+import java.sql.SQLException;
 import java.util.Properties;
-
-import static java.lang.System.gc;
 
 public class Application {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Application.class.getSimpleName());
 
-    public static final int TARGET_COUNT = 10000;
+    public static final int TARGET_COUNT = 1000000;
 
-    public static void main(String[] args) throws ClassNotFoundException {
+    public static void main(String[] args) throws ClassNotFoundException, SQLException {
         var properties = loadProperties();
         var wordStore = new WordStore(properties);
         var articleStore = new ArticleStore(properties);

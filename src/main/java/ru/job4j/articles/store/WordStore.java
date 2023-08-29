@@ -2,7 +2,6 @@ package ru.job4j.articles.store;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.job4j.articles.model.Article;
 import ru.job4j.articles.model.Word;
 
 import java.nio.file.Files;
@@ -65,15 +64,17 @@ public class WordStore implements Store<Word>, AutoCloseable {
     }
 
     @Override
-    public Word save(Word model) {
+    public List<Word> save(List<Word> model) {
         LOGGER.info("Добавление слова в базу данных");
         String sql = "insert into dictionary(word) values(?);";
         try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            statement.setString(1, model.getValue());
-            statement.executeUpdate();
-            ResultSet key = statement.getGeneratedKeys();
-            if (key.next()) {
-                model.setId(key.getInt(1));
+            for (Word x: model) {
+                statement.setString(1,x.getValue());
+                statement.executeUpdate();
+                ResultSet key = statement.getGeneratedKeys();
+                if (key.next()) {
+                    x.setId(key.getInt(1));
+                }
             }
         } catch (Exception e) {
             LOGGER.error("Не удалось выполнить операцию: { }", e.getCause());
