@@ -69,7 +69,7 @@ public class WordStore implements Store<Word>, AutoCloseable {
         String sql = "insert into dictionary(word) values(?);";
         try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             for (Word x: model) {
-                statement.setString(1,x.getValue());
+                statement.setString(1, x.getValue());
                 statement.executeUpdate();
                 ResultSet key = statement.getGeneratedKeys();
                 if (key.next()) {
