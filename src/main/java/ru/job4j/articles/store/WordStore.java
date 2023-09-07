@@ -26,9 +26,8 @@ public class WordStore implements Store<Word>, AutoCloseable {
         initWords();
     }
 
-    private void initConnection() throws ClassNotFoundException {
+    private void initConnection() {
         LOGGER.info("Подключение к базе данных слов");
-        Class.forName("org.postgresql.Driver");
         try {
             connection = DriverManager.getConnection(
                     properties.getProperty("url"),

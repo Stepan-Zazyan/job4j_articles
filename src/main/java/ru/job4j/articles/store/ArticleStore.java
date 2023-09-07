@@ -62,6 +62,7 @@ public class ArticleStore implements Store<Article>, AutoCloseable {
             }
             statement.executeBatch();
             connection.commit();
+            connection.setAutoCommit(true);
                 ResultSet key = statement.getGeneratedKeys();
                 for (Article model: models) {
                     if (key.next()) {

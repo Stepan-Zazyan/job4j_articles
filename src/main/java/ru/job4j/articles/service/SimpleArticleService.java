@@ -23,23 +23,17 @@ public class SimpleArticleService implements ArticleService {
     }
 
     @Override
-    public void generate(Store<Word> wordStore, int count, ArticleStore articleStore) throws SQLException {
+    public void generate(Store<Word> wordStore, int count, ArticleStore articleStore) {
         LOGGER.info("Геренация статей в количестве {}", count);
         List<Word> words = wordStore.findAll();
-            /*List<Article> articles = IntStream.iterate(0, i -> i < count, i -> i + 1)
-                    .peek(i -> LOGGER.info("Сгенерирована статья № {}", i + " тысяча"))
-                    .mapToObj((x) -> articleGenerator.generate(words))
-                    .collect(Collectors.toList());*/
         for (int i = 0; i < count / 1000; i++) {
             List<Article> articles = new ArrayList<>();
             for (int j = 0; j < 1000; j++) {
                 articles.add(articleGenerator.generate(words));
+                LOGGER.info("Сгенерирована статья № {}", j + " статья");
+                articleStore.save(articles);
+                LOGGER.info("Сохранена № {}", j + " статья");
             }
-            LOGGER.info("Сгенерирована статья № {}", i + " тыща");
-            articleStore.getConnection().setAutoCommit(false);
-            articleStore.save(articles);
-            articleStore.getConnection().commit();
-            LOGGER.info("Сохранена № {}", i + " тыща");
         }
 
     }
