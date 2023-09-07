@@ -8,9 +8,9 @@ import ru.job4j.articles.service.generator.ArticleGenerator;
 import ru.job4j.articles.store.ArticleStore;
 import ru.job4j.articles.store.Store;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class SimpleArticleService implements ArticleService {
 
@@ -27,15 +27,13 @@ public class SimpleArticleService implements ArticleService {
         LOGGER.info("Геренация статей в количестве {}", count);
         List<Word> words = wordStore.findAll();
         for (int i = 0; i < count / 1000; i++) {
-            List<Article> articles = new ArrayList<>();
-            for (int j = 0; j < 1000; j++) {
-                articles.add(articleGenerator.generate(words));
-                LOGGER.info("Сгенерирована статья № {}", j + " статья");
-                articleStore.save(articles);
-                LOGGER.info("Сохранена № {}", j + " статья");
-            }
+            List<Article> articles = IntStream.iterate(i, n -> n < 1000, n -> n + 1)
+                    .peek(n -> LOGGER.info("Сгенерирована статья № {}", n))
+                    .mapToObj(x -> articleGenerator.generate(words))
+                    .collect(Collectors.toList());
+            articleStore.save(articles);
+            LOGGER.info("Сохранено {}", i * 1000 + " статей в БД");
         }
-
     }
 }
 
